@@ -14,9 +14,13 @@ dependencies:
     - numba
     - matplotlib
     - ipython
+    - ipywidgets
     - imageio
     - h5py
+    - rich
+    - ffmpeg
     # Test
+    - jupyterlab
     - pytest
     - pytest-cov
     - pytest-mpl
