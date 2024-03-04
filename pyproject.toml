@@ -1,0 +1,63 @@
+[project]
+name = "tremelique"
+description = "2D elastic wave simulator in Python"
+dynamic = ["version"]
+authors = [
+  {name="The Tremelique Developers", email="fatiandoaterra@protonmail.com"},
+]
+maintainers = [
+  {name = "Leonardo Uieda", email = "leo@uieda.com"}
+]
+readme = "README.md"
+license = {text = "BSD 3-Clause"}
+keywords = ["geophysics", "seismology", "waves"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pooch>=1.5.0,<2.0.0",
+]
+
+[project.urls]
+"Documentation" = "https://www.fatiando.org/tremelique"
+"Changelog" = "https://www.fatiando.org/tremelique/latest/changes.html"
+"Bug Tracker" = "https://github.com/fatiando/tremelique/issues"
+"Source Code" = "https://github.com/fatiando/tremelique"
+
+[build-system]
+requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme =  "post-release"
+local_scheme =  "no-local-version"
+write_to =  "tremelique/_version_generated.py"
+
+# Make sure isort and Black are compatible
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.burocrata]
+notice = '''
+# Copyright (c) 2024 The Tremelique Developers.
+# Distributed under the terms of the BSD 3-Clause License.
+# SPDX-License-Identifier: BSD-3-Clause
+#
+# This code is part of the Fatiando a Terra project (https://www.fatiando.org)
+#'''
