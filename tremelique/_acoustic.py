@@ -308,7 +308,7 @@ class Acoustic(BaseSimulation):
 
         anim = animation.FuncAnimation(fig, plot, frames=frames, **kwargs)
         if embed:
-            return anim_to_html(anim, fps=fps, dpi=dpi, writer=writer)
+            return anim_to_html(anim, fps=fps, dpi=dpi)
         else:
             plt.show()
             return anim
@@ -322,9 +322,9 @@ class Acoustic(BaseSimulation):
 
 
 @numba.jit(nopython=True)
-def timestep_esg(
+def timestep_esg(  # noqa: CFQ002
     u_tp1, u_t, u_tm1, x1, x2, z1, z2, dt, dx, dz, vel, dens
-):  # noqa: CFQ002
+):
     """
     Perform a single time step in the Finite Difference solution for elastic
     SH waves using the Equivalent Staggered Grid method.

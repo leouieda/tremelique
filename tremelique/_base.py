@@ -10,60 +10,21 @@ Base class for 2D finite-difference simulations
 
 import abc
 import os
-import sys
 import tempfile
 from tempfile import NamedTemporaryFile
-from timeit import default_timer
 import base64
 
+import rich.progress
 import h5py
 import numpy as np
 from IPython.core.pylabtools import print_figure
-from IPython.display import HTML, Image
+from IPython.display import Video, Image
 from ipywidgets import widgets
 from matplotlib import pyplot as plt
 
 
-def format_time(t):
-    """Format seconds into a human readable form.
 
-    >>> format_time(10.4)
-    '10.4s'
-    >>> format_time(1000.4)
-    '16min 40.4s'
-    """
-    m, s = divmod(t, 60)
-    h, m = divmod(m, 60)
-    if h:
-        return "{0:2.0f}hr {1:2.0f}min {2:4.1f}s".format(h, m, s)
-    elif m:
-        return "{0:2.0f}min {1:4.1f}s".format(m, s)
-    else:
-        return "{0:4.1f}s".format(s)
-
-
-def progressbar(it, stream=sys.stdout, size=50):
-    count = len(it)
-    start_time = default_timer()
-
-    def _show(_i):
-        tics = int(size * _i / count)
-        bar = "#" * tics
-        percent = (100 * _i) // count
-        elapsed = format_time(default_timer() - start_time)
-        msg = "\r[{0:<{1}}] | {2}% Completed | {3}".format(bar, size, percent, elapsed)
-        stream.write(msg)
-        stream.flush()
-
-    _show(0)
-    for i, item in enumerate(it):
-        yield item
-        _show(i + 1)
-    stream.write("\n")
-    stream.flush()
-
-
-def anim_to_html(anim, fps=6, dpi=30, writer="ffmpeg", fmt="mp4"):
+def anim_to_html(anim, fps=6, dpi=30):
     """
     Convert a matplotlib animation object to a video embedded in an HTML
     <video> tag.
@@ -75,24 +36,18 @@ def anim_to_html(anim, fps=6, dpi=30, writer="ffmpeg", fmt="mp4"):
     Adapted from `the yt project docs
     <http://yt-project.org/doc/cookbook/embedded_webm_animation.html>`__.
     """
-    VIDEO_TAG = """
-    <video width="800" controls>
-    <source src="data:video/{fmt};base64,{data}" type="video/{fmt}">
-    Your browser does not support the video tag.
-    </video>"""
     plt.close(anim._fig)
-    extra_args = []
-    if writer == "avconv":
-        extra_args.extend(["-vcodec", "libvpx"])
-    if writer == "ffmpeg":
-        extra_args.extend(["-vcodec", "libx264"])
-    if not hasattr(anim, "_encoded_video"):
-        with NamedTemporaryFile(suffix="." + fmt) as f:
-            anim.save(f.name, fps=fps, dpi=dpi, writer=writer, extra_args=extra_args)
-            with open(f.name, "rb") as f:
-                video = f.read()
-        anim._encoded_video = base64.b64encode(video).decode()
-    return HTML(VIDEO_TAG.format(fmt=fmt, data=anim._encoded_video))
+    with NamedTemporaryFile(suffix=".mp4") as f:
+        anim.save(f.name, fps=fps, dpi=dpi, writer="ffmpeg", extra_args=["-vcodec", "libx264"])
+        with open(f.name, "rb") as f:
+            video = f.read()
+    return Video(
+        data=base64.b64encode(video).decode(),
+        embed=True,
+        mimetype="video/mp4",
+        width=800,
+        html_attributes="controls",
+    )
 
 
 class BaseSimulation(abc.ABC):
@@ -334,7 +289,7 @@ class BaseSimulation(abc.ABC):
 
         iterator = range(iterations)
         if self.verbose:
-            iterator = progressbar(iterator)
+            iterator = rich.progress.track(iterator)
 
         for iteration in iterator:
             t, tm1 = iteration % 2, (iteration + 1) % 2
