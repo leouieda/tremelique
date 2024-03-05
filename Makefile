@@ -2,7 +2,7 @@
 PROJECT=tremelique
 TESTDIR=tmp-test-dir-with-unique-name
 PYTEST_ARGS=--cov-config=../.coveragerc --cov-report=term-missing --cov=$(PROJECT) --doctest-modules -v --pyargs
-CHECK_STYLE=$(PROJECT)
+CHECK_STYLE=$(PROJECT) doc
 
 help:
 	@echo "Commands:"
